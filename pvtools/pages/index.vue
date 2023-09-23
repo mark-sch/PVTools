@@ -1,22 +1,10 @@
 <template>
   <b-container fluid>
-    <b-row>
+    <b-row cols="1" cols-md="1">
       <b-col>
-        <h1>PVTools</h1>
-      </b-col>
-      <b-col>
-        <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="200" height="100"
-          type="text/html"
-          src="https://www.youtube.com/embed/FKSDynkXchY?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=0&start=0&end=0"></iframe>
-      </b-col>
-      <b-col align-v="baseline" cols="auto">
-        <form action="https://www.paypal.me/akkudoktor" method="post" target="_blank" class="paypal">
-          <input type="hidden" name="hosted_button_id" value="RTXEPF475DBVA" />
-          <input type="image" src="/btn_support_LG.gif" border="0" name="submit" title="Unterstütze unsere Arbeit!"
-            alt="Spenden mit dem PayPal-Button" />
-          <!-- <img alt="" border="0" src="https://www.paypal.com/de_DE/i/scr/pixel.gif" width="1" height="1" /> -->
-        </form>
-        <p>Nutze als Grund: "PV-Tool"</p>
+        <h1>PV-Analyse mit standortbezogenen <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/#api_5.2" target="_new">PVGIS</a> Daten</h1>
+        <h3>Berechnung mittels individuellem Lastgang (oder BDEW Standardlastprofil)</h3>
+        <br/>
       </b-col>
     </b-row>
     <b-row>
@@ -57,16 +45,16 @@
               </b-input-group>
             </b-form-group>
             <b-form-group label="Stromkosten:">
-              <b-input-group append="€ / kWh">
-                <b-input v-model.number="input.consumptionCosts" type="number" min="0" step="0.01" />
+              <b-input-group append="Cent / kWh">
+                <b-input v-model.number="input.consumptionCosts" type="number" min="0" step="1" />
               </b-input-group>
             </b-form-group>
             <b-form-group label="Einspeisevergütung:">
-              <b-input-group append="€ / kWh">
-                <b-input v-model.number="input.feedInCompensation" min="0" type="number" step="0.001" />
+              <b-input-group append="Cent / kWh">
+                <b-input v-model.number="input.feedInCompensation" min="0" type="number" step="1" />
               </b-input-group>
             </b-form-group>
-            <b-form-group label="Installationskosten ohne Akku:">
+            <b-form-group label="Anlagen+Installationskosten (ohne Akku):">
               <b-input-group append="€">
                 <b-input v-model.number="input.installationCostsWithoutBattery" min="0" type="number" step="1" />
               </b-input-group>
@@ -97,9 +85,9 @@
                 </b-input-group>
               </b-form-group>
               <b-form-group label="Installierte Leistung">
-                <b-input-group append="Wp">
-                  <b-input v-model.number="roofInput.peakpower" min="1" type="number" step="1" required v-b-tooltip.hover
-                    title='Bei 10kWp muss "10000" eingetragen werden' />
+                <b-input-group append="kWp">
+                  <b-input v-model.number="roofInput.peakpower" min="0.3" type="number" step="0.1" required v-b-tooltip.hover
+                    title='Bei 20 PV-Module je 405 Watt muss "8.1" eingetragen werden' />
                 </b-input-group>
               </b-form-group>
 
@@ -113,7 +101,7 @@
           <b-list-group class="mt-3">
             <div v-for="roof in input.roofs" :key="roof.aspect + roof.angle + roof.peakpower">
               <b-list-group-item button :v-b-toggle="'roof' + roof.aspect + roof.angle + roof.peakpower">
-                Ausrichtung {{ roof.aspect }}° - Neigung: {{ roof.angle }}° - {{ roof.peakpower }} Wp
+                {{ roof.peakpower }} kWp - Ausrichtung {{ roof.aspect }}° - Neigung: {{ roof.angle }}°
                 <b-button-group>
                   <b-button variant="primary"
                     @click="roofInput.aspect = roof.aspect
@@ -137,19 +125,6 @@
               </b-collapse> -->
             </div>
           </b-list-group>
-
-            <b-button-group class="mt-3">
-              <b-button variant="primary" @click="generateData"
-                :disabled="(!adressData.lat && !adressData.lon) || input.roofs.length == 0"
-                :title="(!adressData.lat && !adressData.lon) || input.roofs.length == 0 ? 'Füge eine Adresse und mindestens eine PV Ausrichtung hinzu' : ''"
-                v-b-toggle.inputCollapse>
-                Berechnen
-              </b-button>
-              <b-button variant="danger" @click="resetValues">
-                Zurücksetzen
-              </b-button>
-              <b-button v-b-toggle.extensionsCollapse>Erweiterte Einstellungen</b-button>
-            </b-button-group>
 
           <b-collapse id="extensionsCollapse">
             <b-form-group label="Speichergrößen:">
@@ -237,6 +212,22 @@
         </b-collapse>
       </b-col>
     </b-row>
+    <b-row cols="1" cols-md="1">
+      <b-col>
+        <b-button-group class="mt-3">
+              <b-button variant="primary" @click="generateData"
+                :disabled="(!adressData.lat && !adressData.lon) || input.roofs.length == 0"
+                :title="(!adressData.lat && !adressData.lon) || input.roofs.length == 0 ? 'Füge eine Adresse und mindestens eine PV Ausrichtung hinzu' : ''"
+                v-b-toggle.inputCollapse>
+                Berechnen
+              </b-button>
+              <b-button variant="danger" @click="resetValues">
+                Zurücksetzen
+              </b-button>
+              <b-button v-b-toggle.extensionsCollapse>Erweiterte Einstellungen</b-button>
+        </b-button-group>
+      </b-col>
+    </b-row>
     <b-overlay :show="isCalculating" rounded="sm">
       <b-row>
         <b-col>
@@ -293,7 +284,7 @@
                 :fields="[
                   { key: 'aspect', label: 'Ausrichtung', formatter: (val) => (val).toFixed(1) + '°' },
                   { key: 'angle', label: 'Neigung', formatter: (val) => (val).toFixed(1) + '°' },
-                  { key: 'peakpower', label: 'Leistung', formatter: (val) => (val/1000).toFixed(1) + ' kWp' },
+                  { key: 'peakpower', label: 'Leistung', formatter: (val) => (val*1).toFixed(1) + ' kWp' },
                   { key: 'generationYear', label: 'PV-Ertrag', formatter: (val) => (val).toFixed(1) + ' kWh' },
                 ]"
                 small
@@ -316,8 +307,9 @@
         </template>
       </b-table>
     </b-overlay>
+    <br/>
     <FAQ />
-    <NuxtLink to="/impress">Impressum / Datenschutz</NuxtLink>
+    <NuxtLink to="https://github.com/mark-sch/PVTools">Open Source on GitHub</NuxtLink>
   </b-container>
 </template>
 
@@ -353,44 +345,44 @@ export default {
         { key: 'fedInPower', label: 'Eingespeister Strom / Jahr', formatter: (val) => val.toFixed(2) + " kWh" },
         { key: 'selfUseRate', label: 'Eigenverbrauchsquote', formatter: (val) => val.toFixed(2) + " %" },
         { key: 'selfSufficiencyRate', label: 'Autarkiegrad', formatter: (val) => val.toFixed(2) + " %" },
-        { key: 'costSavingsBattery', label: 'Ersparnis / Jahr durch Akku', formatter: (val) => val.toFixed(2) + " €"  },
-        { key: 'batteryAmortization', label: 'Amortisation nur Speicher', formatter: (val) => val.toFixed(2) + " Jahre" },
+        { key: 'costSavingsBattery', label: 'Ersparnis / Jahr durch Akku', formatter: (val) => (val < 0 ? (0).toFixed(2) : val.toFixed(2)) + " €"  },
+        { key: 'batteryAmortization', label: 'Amortisation nur Speicher', formatter: (val) => (val < 0 ? (0).toFixed(2) : val.toFixed(2)) + " Jahre" },
         { key: 'costSavings', label: 'Ersparnis / Jahr Anlage', formatter: (val) => val.toFixed(2) + " €" },
-        { key: 'amortization', label: 'Amortisation Anlage', formatter: (val) => val.toFixed(2) + " Jahre"  },
+        { key: 'amortization', label: 'Amortisation Anlage', formatter: (val) => (val < 0 ? (0).toFixed(2) : val.toFixed(2)) + " Jahre"  },
         { key: 'show_details', label: 'Weitere Details'  },
       ],
       inputBatterySizes: [],
       batterySizes: JSON.parse(localStorage.getItem('storedSizes')) || [
         500,
         1000,
-        2000,
-        4000,
-        6000,
-        8000,
-        12000,
-        16000,
-        20000,
-        25000,
-        30000
+        3300,
+        6500,
+        9900,
+        13000,
+        16500,
+        19500,
+        26000,
+        32500,
+        52000
       ],
       input: JSON.parse(localStorage.getItem('storedInput')) || {
         roofs: [],
         yearlyConsumption: 5000,
         consumptionProfile: 0,
-        consumptionCosts: 0.32,
-        feedInCompensation: 0.086,
+        consumptionCosts: 32,
+        feedInCompensation: 8.6,
         installationCostsWithoutBattery: 10000,
-        batteryCostsPerKwh: 500,
+        batteryCostsPerKwh: 330,
         systemloss: 12,
-        batteryLoadEfficiency: 99,
-        batteryUnloadEfficiency: 99,
+        batteryLoadEfficiency: 95,
+        batteryUnloadEfficiency: 95,
         batterySocMinPercent: 10,
         year: 2020,
-        maxPowerGenerationInverter: 0,
-        maxPowerGenerationBattery: 0,
-        maxPowerLoadBattery: 0,
+        maxPowerGenerationInverter: 12000,
+        maxPowerGenerationBattery: 12000,
+        maxPowerLoadBattery: 12000,
         maxPowerFeedIn: 0,
-        amortizationYears: 20,
+        amortizationYears: 25,
         linearDegrationModules:0.5,
         linearConsumptionChange:0.5, // negative = less need
         linearConsumptionCostsChange:0,
@@ -402,8 +394,8 @@ export default {
       mergedPower:[],
       roofInput: {
         aspect: 0,
-        angle: 0,
-        peakpower: 0
+        angle: 30,
+        peakpower: 9.6
       },
       // CSV Import
       useImportData: false,
@@ -457,7 +449,7 @@ export default {
               angle: roof.angle,
               lat: this.adressData.lat,
               lon: this.adressData.lon,
-              peakpower: roof.peakpower / 1000,
+              peakpower: roof.peakpower,
               loss: this.input.systemloss,
               startyear: this.input.year,
               endyear: this.input.year
@@ -490,8 +482,6 @@ export default {
       let BatterySizeResults = batterySizesWithNoBattery.map(size => {
         let newSoc = 100
 
-
-
         const energyFlowData = powerGenAndConsumption.map(genConsumption => {
           const energyFlowObj = {
             powerGeneration: genConsumption.P,
@@ -523,7 +513,7 @@ export default {
         const fedInPower = energyFlowData.reduce((prev, curr) => curr.feedInPowerGrid + prev, 0) / 1000
         const selfSufficiencyRate = selfUsedPower / this.input.yearlyConsumption * 100 // Autarkiegrad
         const selfUseRate = selfUsedPower / generationYear * 100 // Eigenverbrauchsquote
-        const costSavings = (selfUsedPower * this.input.consumptionCosts + fedInPower * this.input.feedInCompensation)
+        const costSavings = (selfUsedPower * this.input.consumptionCosts/100 + fedInPower * this.input.feedInCompensation/100)
         if (size == 1) costSavingWithoutBattery = costSavings;
         const amortization = (this.input.installationCostsWithoutBattery + this.input.batteryCostsPerKwh * (size / 1000)) / costSavings
         const costSavingsBattery = size == 1 ? 0 : costSavings - costSavingWithoutBattery
@@ -566,7 +556,7 @@ export default {
             // var suRate = selfUseRate * (100 + this.input.linearSelfUseRateChange * val)/100
             var suRate = selfUseRate * ((this.input.linearSelfUseRateChange / 100+1)**val)
             const suPower = generationYear*suRate/100
-            const conCosts = this.input.consumptionCosts * ((100 + this.input.linearConsumptionCostsChange*val)/100)
+            const conCosts = this.input.consumptionCosts/100 * ((100 + this.input.linearConsumptionCostsChange*val)/100)
             const fedIn = generationYear - suPower
 
             return {
@@ -578,11 +568,10 @@ export default {
               selfSufficiencyRate: suPower/conYear*100,
               selfUsedRate: selfUseRate,
               consumptionCosts: conCosts,
-              costSavings: (suPower * conCosts + fedIn * this.input.feedInCompensation),
+              costSavings: (suPower * conCosts + fedIn * this.input.feedInCompensation/100),
             }
 
         })
-
 
 
         const monthlyData = Object.keys(monthlyDataObj).map(key => {
@@ -637,7 +626,7 @@ export default {
       //API BaseURL with Base Params
       // let string = `https://re.jrc.ec.europa.eu/api/v5_2/SHScalc?outputformat=json&raddatabase=PVGIS-SARAH&cutoff=1`
 
-      const loss = params.loss || 12
+      const loss = params.loss || 14
       const lat = params.lat
       const lon = params.lon
       const startyear = params.startyear || params.year || 2020

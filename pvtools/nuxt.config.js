@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'PVTool @AkkuDoktor - Berechne die Größe deines Speichers selbst',
+    title: 'PV-Analyse',
     htmlAttrs: {
       lang: 'de'
     },
