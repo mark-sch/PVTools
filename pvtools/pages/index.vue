@@ -800,6 +800,12 @@ export default {
 </script>
 
 <style>
+@media print {
+  body {
+    zoom: 78%;
+  }
+}
+
 #chart {
   max-height: 50vh;
 }
