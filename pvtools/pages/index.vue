@@ -1,5 +1,6 @@
+
 <template>
-  <b-container fluid>
+  <b-container>
     <b-row cols="1" cols-md="1">
       <b-col>
         <h1>PV-Analyse mit standortbezogenen <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/#api_5.2" target="_new">PVGIS</a> Daten</h1>
@@ -224,8 +225,13 @@
               <b-button variant="danger" @click="resetValues">
                 Zurücksetzen
               </b-button>
+              <b-button variant="info" @click="deepLink">
+                Deep Link
+              </b-button>
               <b-button v-b-toggle.extensionsCollapse>Erweiterte Einstellungen</b-button>
         </b-button-group>
+        <p>&nbsp;
+        </p>
       </b-col>
     </b-row>
     <b-overlay :show="isCalculating" rounded="sm">
@@ -425,6 +431,7 @@ export default {
   methods: {
 
     async generateData() {
+
       if (localStorage /* function to detect if localstorage is supported*/) {
         localStorage.setItem('storedInput', JSON.stringify(this.input))
         localStorage.setItem('storedInputAddressSearchString', this.inputAddressSearchString)
@@ -643,6 +650,11 @@ export default {
       localStorage.clear()
       location.reload()
     },
+    deepLink() {
+      let dl = "http://localhost:3000/?si=" + encodeURIComponent(JSON.stringify(this.input)) + "&sa=" + encodeURIComponent(JSON.stringify(this.adressData)) + "&sass=" + encodeURIComponent(JSON.stringify(this.inputAddressSearchString));
+      navigator.clipboard.writeText(dl);
+      alert("Der Deeplink zu dieser Berechnung wurde in die Zwischenablage kopiert");
+    },
     tagValidator(tag) {
 
       return !isNaN(tag) && tag < 200000 && tag > 200
@@ -723,6 +735,23 @@ export default {
       this.needFetch = true
     },
     deep: true
+  },
+  beforeCreate() {
+    var objUrlParams = new URLSearchParams(window.location.search);
+
+    if (objUrlParams.has('si') && localStorage) {
+      localStorage.setItem('storedInput', objUrlParams.get('si'));
+      
+      if (objUrlParams.has('sa')) {
+        localStorage.setItem('storedAddress', objUrlParams.get('sa'));
+      }
+
+      if (objUrlParams.has('sass')) {
+        localStorage.setItem('storedInputAddressSearchString', objUrlParams.get('sass'));
+      }
+      
+      window.location = "/";
+    }
   },
   mounted() {
     this.screenHeight = window.screen.height
