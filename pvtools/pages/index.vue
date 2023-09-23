@@ -215,6 +215,9 @@
     </b-row>
     <b-row cols="1" cols-md="1">
       <b-col>
+        <b-form-checkbox id="checkboxKfW442" v-model.number="input.KfW442" name="checkboxKfW442" value="checked" unchecked-value="unchecked">
+          Förderprogramm KfW 442 berücksichtigen
+        </b-form-checkbox>
         <b-button-group class="mt-3">
               <b-button variant="primary" @click="generateData"
                 :disabled="(!adressData.lat && !adressData.lon) || input.roofs.length == 0"
@@ -296,6 +299,18 @@
                 small
                 responsive="sm"
               />
+              <h4>Kosten der PV-Anlage</h4>
+              <b-table
+                striped hover
+                :items="[row.item]"
+                :fields="[
+                  { key: 'totalSystemCosts', label: 'Anlagenkosten', formatter: (val) => val + '€' },
+                  { key: 'totalSystemDiscount', label: 'Vergütung durch Förderung', formatter: (val) => val + '€' },
+                  { key: 'totalDiscountedCosts', label: 'Gesamtkosten', formatter: (val) => val + '€' },
+                ]"
+                small
+                responsive="sm"
+              />
           </b-card>
           <b-card>
             <h4>Monatsverlauf</h4>
@@ -315,7 +330,7 @@
     </b-overlay>
     <br/>
     <FAQ />
-    <NuxtLink to="https://github.com/mark-sch/PVTools">Open Source on GitHub</NuxtLink>
+    <a href="https://github.com/mark-sch/PVTools" target="_new">Open Source on GitHub</a>
   </b-container>
 </template>
 
@@ -375,7 +390,7 @@ export default {
         roofs: [],
         yearlyConsumption: 5000,
         consumptionProfile: 0,
-        consumptionCosts: 32,
+        consumptionCosts: 42,
         feedInCompensation: 8.6,
         installationCostsWithoutBattery: 10000,
         batteryCostsPerKwh: 330,
@@ -448,8 +463,10 @@ export default {
       if (this.needFetch) {
       
         this.roofsData = []
+        this.totalPeakPower = 0;
 
         const generationData = await Promise.all(this.input.roofs.map(roof => {
+          this.totalPeakPower += roof.peakpower;
           return this.$axios.post("/relay", {
             url: this.buildQueryString({
               aspect: roof.aspect,
@@ -520,11 +537,28 @@ export default {
         const fedInPower = energyFlowData.reduce((prev, curr) => curr.feedInPowerGrid + prev, 0) / 1000
         const selfSufficiencyRate = selfUsedPower / this.input.yearlyConsumption * 100 // Autarkiegrad
         const selfUseRate = selfUsedPower / generationYear * 100 // Eigenverbrauchsquote
+        const totalSystemCosts = (this.input.installationCostsWithoutBattery + this.input.batteryCostsPerKwh * (size / 1000))
+        var totalSystemDiscount = 0
         const costSavings = (selfUsedPower * this.input.consumptionCosts/100 + fedInPower * this.input.feedInCompensation/100)
         if (size == 1) costSavingWithoutBattery = costSavings;
-        const amortization = (this.input.installationCostsWithoutBattery + this.input.batteryCostsPerKwh * (size / 1000)) / costSavings
+        
+        var amortization = (this.input.installationCostsWithoutBattery + this.input.batteryCostsPerKwh * (size / 1000)) / costSavings
+        if (this.input.KfW442 == "checked") {
+          let maxbatdiscount = size > 12000 ? 12000 : size;
+          let maxpvdiscount = this.totalPeakPower > 10 ? 10 : this.totalPeakPower;
+          
+          amortization = (this.input.installationCostsWithoutBattery - 600 - maxpvdiscount*600 + this.input.batteryCostsPerKwh * (size / 1000) - 250 * (maxbatdiscount / 1000)) / costSavings
+          totalSystemDiscount = 600 + maxpvdiscount*600 + (maxbatdiscount / 1000)*250
+        }
+        
         const costSavingsBattery = size == 1 ? 0 : costSavings - costSavingWithoutBattery
-        const batteryAmortization = size == 1 ? 0 : this.input.batteryCostsPerKwh * (size / 1000) / costSavingsBattery
+        var batteryAmortization = size == 1 ? 0 : this.input.batteryCostsPerKwh * (size / 1000) / costSavingsBattery
+        if (this.input.KfW442 == "checked") {
+          let maxdiscount = size > 12000 ? 12000 : size;
+          batteryAmortization = (this.input.batteryCostsPerKwh * (size / 1000) - 250 * (maxdiscount / 1000)) / costSavingsBattery;
+        }
+
+        var totalDiscountedCosts = totalSystemCosts - totalSystemDiscount
 
         const monthlyDataObj = energyFlowData.reduce((prev, curr) => {
           const month = parseInt(curr.dayTime.slice(4, 6))
@@ -597,6 +631,9 @@ export default {
           missedFeedInPowerGrid,
           missedInverterPower,
           consumptionGrid,
+          totalSystemCosts,
+          totalSystemDiscount,
+          totalDiscountedCosts,
           selfSufficiencyRate,
           selfUseRate,
           costSavings,
