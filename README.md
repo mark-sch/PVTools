@@ -2,12 +2,15 @@
 
 # PV-Analyse Tool
 PV Auslegungsrechner mit Support für
-- Batteriespeicher
-- mehrere Dachflächen
-- individuellen Lastgang (csv)
-- KfW 442 Förderprogramm
-- Deep Linking der Eingabedaten
+
+  - Batteriespeicher
+  - mehrere Dachflächen
+  - individuellen Lastgang (csv)
+  - KfW 442 Förderprogramm
+  - Deep Linking der Eingabedaten
+    
 auf Basis von individuellen PV-Ertragsdaten unter Nutzung der PVGIS Datenbank.
+
 
 ## API-Foundation:
 https://re.jrc.ec.europa.eu/api/v5_2/
