@@ -1,9 +1,13 @@
-[![Website](https://img.shields.io/website?up_message=online&url=https%3A%2F%2Fpvtools.sektorsonne.de%2F)](https://pvtools.sektorsonne.de)
+[![Website](https://pvgis.sunny5.de)
 
-# PVTools
-PV Auslegungsrechner für mit Support für
+# PV-Analyse Tool
+PV Auslegungsrechner mit Support für
 - Batteriespeicher
-- Mehrere Dachflächen
+- mehrere Dachflächen
+- individuellen Lastgang (csv)
+- KfW 442 Förderprogramm
+- Deep Linking der Eingabedaten
+auf Basis von individuellen PV-Ertragsdaten unter Nutzung der PVGIS Datenbank.
 
 ## API-Foundation:
 https://re.jrc.ec.europa.eu/api/v5_2/
@@ -13,15 +17,3 @@ https://re.jrc.ec.europa.eu/api/v5_2/SHScalc?lat=45&lon=8&outputformat=json&peak
 Dokumentation:
 
 https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/api-non-interactive-service_en
-
-Frontend fragt Backend an mit:
-
-Anfrage Body:
-- Link für die Abfrage
-- Body für die Abfrage
-- HTTP Method
-
-
-Backend nimmt die Daten und fragt bei "Link" mit "Body" an
-
-Backend schickt Antwort von "Link" an Frontend zurück
