@@ -1,4 +1,4 @@
-[![Website](https://pvgis.sunny5.de)
+https://pvgis.sunny5.de
 
 # PV-Analyse Tool
 PV Auslegungsrechner mit Support für
