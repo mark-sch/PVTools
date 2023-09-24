@@ -51,9 +51,6 @@ export default {
      baseURL: process.env.NODE_ENV == 'production' ? `https://${process.env.APP_URL}` : 'http://localhost:8082',
     //  baseURL: 'http://localhost:8082',
   },
-  googleAnalytics: {
-    id: process.env.GOOGLE_ANALYTICS_ID
-  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
 
   build: {
