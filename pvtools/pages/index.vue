@@ -688,7 +688,7 @@ export default {
       location.reload()
     },
     deepLink() {
-      let dl = "http://pvgis.sunny5.de/?si=" + encodeURIComponent(JSON.stringify(this.input)) + "&sa=" + encodeURIComponent(JSON.stringify(this.adressData)) + "&sass=" + encodeURIComponent(JSON.stringify(this.inputAddressSearchString));
+      let dl = "https://pvgis.sunny5.de/?si=" + encodeURIComponent(JSON.stringify(this.input)) + "&sa=" + encodeURIComponent(JSON.stringify(this.adressData)) + "&sass=" + encodeURIComponent(JSON.stringify(this.inputAddressSearchString));
       navigator.clipboard.writeText(dl);
       alert("Der Deeplink zu dieser Berechnung wurde in die Zwischenablage kopiert");
     },
