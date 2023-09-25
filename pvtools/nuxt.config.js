@@ -4,14 +4,14 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'PV-Analyse',
+    title: 'PV-Analyse mit KfW 442 Förderung berechnen',
     htmlAttrs: {
       lang: 'de'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'Berechnet die Wirtschaftlichkeit und den Ertrag von Photovoltaikanlagen unter Berücksichtigung der KfW 442 Förderung. Die Amortisation wird nach Batteriespeicher Größe untersucht, die PV Erträge berechnen sich aus der PVGIS Datenbank der Europäischen Kommision.' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
