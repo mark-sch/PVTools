@@ -79,7 +79,7 @@
                     title="0 = Süden, 90 = Westen, -90 = Osten" />
                 </b-input-group>
               </b-form-group>
-              <b-form-group label="Neigung:">
+              <b-form-group label="Dachneigung:">
                 <b-input-group append="° Grad">
                   <b-form-input v-model.number="roofInput.angle" type="number" min="0" max="90" required v-b-tooltip.hover
                     title="0 = waargerecht, 90 = senkrecht" />
@@ -94,14 +94,16 @@
 
               <b-button-group>
                 <b-button type="submit">
-                  Ausrichtung zur Berechnung hinzufügen
+                  Modulfläche hinzufügen
                 </b-button>
               </b-button-group>
             </b-card>
           </b-form>
           <b-list-group class="mt-3">
+            <p><b>Modulfläche(n):</b></p>
             <div v-for="roof in input.roofs" :key="roof.aspect + roof.angle + roof.peakpower">
               <b-list-group-item button :v-b-toggle="'roof' + roof.aspect + roof.angle + roof.peakpower">
+                
                 {{ roof.peakpower }} kWp - Ausrichtung {{ roof.aspect }}° - Neigung: {{ roof.angle }}°
                 <b-button-group>
                   <b-button variant="primary"
