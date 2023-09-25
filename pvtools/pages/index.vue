@@ -3,8 +3,8 @@
   <b-container>
     <b-row cols="1" cols-md="1">
       <b-col>
-        <h1>PV-Analyse mit standortbezogenen <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/#api_5.2" target="_new">PVGIS</a> Daten</h1>
-        <h3>Berechnung mittels individuellem Lastgang (oder BDEW Standardlastprofil)</h3>
+        <h1>PV-Analyse mit KfW 442 Förderung berechnen</h1>
+        <h3>Basierend auf <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/#api_5.2" target="_new">PVGIS</a> Daten der Europäischen Kommission</h3>
         <br/>
       </b-col>
     </b-row>
@@ -688,7 +688,7 @@ export default {
       location.reload()
     },
     deepLink() {
-      let dl = "http://localhost:3000/?si=" + encodeURIComponent(JSON.stringify(this.input)) + "&sa=" + encodeURIComponent(JSON.stringify(this.adressData)) + "&sass=" + encodeURIComponent(JSON.stringify(this.inputAddressSearchString));
+      let dl = "http://pvgis.sunny5.de/?si=" + encodeURIComponent(JSON.stringify(this.input)) + "&sa=" + encodeURIComponent(JSON.stringify(this.adressData)) + "&sass=" + encodeURIComponent(JSON.stringify(this.inputAddressSearchString));
       navigator.clipboard.writeText(dl);
       alert("Der Deeplink zu dieser Berechnung wurde in die Zwischenablage kopiert");
     },
