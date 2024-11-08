@@ -11,6 +11,7 @@ export const relayAPIRequest:RequestHandler = ((req,res, next) => {
     }
     
     if(req.body.method == "GET"){
+        req.headers['user-agent'] = "Think5, PVgis Open Source Tool";
         axios.get(req.body.url)
             .then((result:any) => res.json(result.data))
             .catch((error:any) => console.error(error))
