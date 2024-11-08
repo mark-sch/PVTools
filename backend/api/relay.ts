@@ -11,15 +11,24 @@ export const relayAPIRequest:RequestHandler = ((req,res, next) => {
     }
     
     if(req.body.method == "GET"){
-        req.headers['user-agent'] = "Think5, PVgis Open Source Tool";
-        axios.get(req.body.url)
+        axios({
+            url: req.body.url,
+            method: 'GET',
+            params: {
+                'url': req.body.url,
+            },
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+                "Accept": "application/json",
+                "Accept-Encoding": "gzip, deflate, br",
+                'Referer': 'https://pvgis.sunny5.de',
+            },
+        })
             .then((result:any) => res.json(result.data))
             .catch((error:any) => console.error(error))
     } else {
         return res.send(403)
     }
-
-
 })
 
 

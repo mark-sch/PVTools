@@ -469,7 +469,7 @@ export default {
 
         const generationData = await Promise.all(this.input.roofs.map(roof => {
           this.totalPeakPower += roof.peakpower;
-          return this.$axios.post("/relay", {
+          return this.$axios.post("http://localhost:8082/relay", {
             url: this.buildQueryString({
               aspect: roof.aspect,
               angle: roof.angle,
@@ -653,7 +653,7 @@ export default {
       this.displayData = BatterySizeResults
     },
     async getCoordinatesByAddress() {
-      let osmReturn = (await this.$axios.post("/relay", {
+      let osmReturn = (await this.$axios.post("http://localhost:8082/relay", {
         url: "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=" + encodeURIComponent(this.inputAddressSearchString),
         method: "GET",
         body: {}
