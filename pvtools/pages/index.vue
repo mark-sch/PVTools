@@ -3,7 +3,7 @@
   <b-container>
     <b-row cols="1" cols-md="1">
       <b-col>
-        <h1>PV-Analyse mit KfW 442 Förderung berechnen</h1>
+        <h1>PV-Ertr&auml;ge und Wirtschaftlichkeit berechnen</h1>
         <h3>Basierend auf <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/#api_5.2" target="_new">PVGIS</a> Daten der Europäischen Kommission</h3>
         <br/>
       </b-col>
@@ -469,7 +469,7 @@ export default {
 
         const generationData = await Promise.all(this.input.roofs.map(roof => {
           this.totalPeakPower += roof.peakpower;
-          return this.$axios.post("http://localhost:8082/relay", {
+          return this.$axios.post("/relay", {
             url: this.buildQueryString({
               aspect: roof.aspect,
               angle: roof.angle,
@@ -653,7 +653,7 @@ export default {
       this.displayData = BatterySizeResults
     },
     async getCoordinatesByAddress() {
-      let osmReturn = (await this.$axios.post("http://localhost:8082/relay", {
+      let osmReturn = (await this.$axios.post("/relay", {
         url: "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=" + encodeURIComponent(this.inputAddressSearchString),
         method: "GET",
         body: {}
